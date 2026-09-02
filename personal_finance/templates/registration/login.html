@@ -1,19 +1,68 @@
 {% extends "base.html" %}
+
 {% block title %}Login | MoneyMate{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-<div class="col-md-5">
-<div class="card p-4">
-<h3 class="mb-1">Welcome back</h3><p class="text-muted">Log in to manage your finances.</p>
-<form method="post">{% csrf_token %}
-{% for field in form %}
-<div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}</div>
-{% endfor %}
-{% if form.errors %}<div class="alert alert-danger">Invalid username or password.</div>{% endif %}
-<button class="btn btn-primary w-100">Login</button>
-</form>
-<p class="text-center mt-3 mb-0">New here? <a href="{% url 'register' %}">Create an account</a></p>
+
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+
+        <div class="col-md-5 col-lg-4">
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <h3 class="text-center mb-1">Welcome back</h3>
+
+                    <p class="text-center text-muted small mb-4">
+                        Log in to manage your finances.
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% for field in form %}
+                        <div class="mb-3">
+
+                            <label class="form-label small fw-semibold">
+                                {{ field.label }}
+                            </label>
+
+                            {{ field }}
+
+                            {% if field.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ field.errors|striptags }}
+                            </div>
+                            {% endif %}
+
+                        </div>
+                        {% endfor %}
+
+                        {% if form.errors %}
+                        <div class="alert alert-danger py-2 small">
+                            Invalid username or password.
+                        </div>
+                        {% endif %}
+
+                        <button class="btn btn-primary btn-sm w-100">
+                            Login
+                        </button>
+                    </form>
+
+                    <p class="text-center text-muted small mt-4 mb-0">
+                        New here?
+                        <a href="{% url 'register' %}" class="text-decoration-none">
+                            Create an account
+                        </a>
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 </div>
-</div>
-</div>
+
 {% endblock %}

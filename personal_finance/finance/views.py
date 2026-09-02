@@ -1,14 +1,12 @@
 from calendar import month_name
 from datetime import date
 from decimal import Decimal
-
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
-
 from .forms import TransactionForm
 from .models import Transaction
 
