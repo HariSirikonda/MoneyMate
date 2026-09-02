@@ -13,8 +13,8 @@ from .models import Transaction
 
 def _month_summary(user, year, month):
     qs = Transaction.objects.filter(user=user, date__year=year, date__month=month)
-    income = qs.filter(type=Transaction.INCOME).aggregate(total=Sum("amount"))["total"] or Decimal("0")
-    expense = qs.filter(type=Transaction.EXPENSE).aggregate(total=Sum("amount"))["total"] or Decimal("0")
+    income = qs.filter(type="income").aggregate(total=Sum("amount"))["total"] or Decimal("0")
+    expense = qs.filter(type="expense").aggregate(total=Sum("amount"))["total"] or Decimal("0")
     savings = income - expense
     savings_rate = (savings / income * 100) if income else Decimal("0")
 
