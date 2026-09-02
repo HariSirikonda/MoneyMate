@@ -99,6 +99,33 @@ def transactions(request):
     qs = Transaction.objects.filter(user=request.user)
     return render(request, "finance/transactions.html", {"transactions": qs})
 
+@login_required
+def add_income(request):
+    if request.method == "POST":
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            transaction = form.save(commit=False)
+            transaction.user = request.user
+            transaction.save()
+            messages.success(request, "Transaction added successfully.")
+            return redirect("transactions")
+    else:
+        form = TransactionForm(fixed_type = Transaction.INCOME)
+    return render(request, "finance/transaction_form.html", {"form": form, "title": "Add Income"})
+
+@login_required
+def add_expense(request):
+    if request.method == "POST":
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            transaction = form.save(commit=False)
+            transaction.user = request.user
+            transaction.save()
+            messages.success(request, "Transaction added successfully.")
+            return redirect("transactions")
+    else:
+        form = TransactionForm(fixed_type = Transaction.EXPENSE)
+    return render(request, "finance/transaction_form.html", {"form": form, "title": "Add Expense"})
 
 @login_required
 def add_transaction(request):

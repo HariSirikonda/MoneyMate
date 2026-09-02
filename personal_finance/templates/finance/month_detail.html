@@ -6,7 +6,10 @@
         <a href="{% url 'dashboard' %}" class="text-decoration-none">← Dashboard</a>
         <h2 class="mt-2 mb-0">{{ month_name }} {{ year }}</h2>
     </div>
-    <a href="{% url 'add_transaction' %}" class="btn btn-primary">+ Add transaction</a>
+    <div>
+        <a href="{% url 'add_income' %}" class="btn btn-success">+ Add Income</a>
+        <a href="{% url 'add_expense' %}" class="btn btn-danger">+ Add Expense</a>
+    </div>
 </div>
 
 <div class="row g-3 mb-4">

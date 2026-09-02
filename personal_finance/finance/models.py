@@ -13,6 +13,29 @@ class Transaction(models.Model):
         (EXPENSE, "Expense"),
     ]
 
+    INCOME_CATEGORY_CHOICES = [
+            ("salary", "Salary"),
+            ("freelance", "Freelance"),
+            ("business", "Business"),
+        ]
+
+    EXPENSE_CATEGORY_CHOICES = [
+        ("investment", "Investment"),
+        ("food", "Food"),
+        ("transport", "Transport"),
+        ("shopping", "Shopping"),
+        ("rent", "Rent"),
+        ("utilities", "Utilities"),
+        ("health", "Health"),
+        ("education", "Education"),
+        ("entertainment", "Entertainment"),
+        ("subscriptions", "Subscriptions"),
+        ("bills", "Bills"),
+        ("travel", "Travel"),
+        ("family", "Family"),
+        ("other", "Other"),
+    ]
+
     CATEGORY_CHOICES = [
         ("salary", "Salary"),
         ("freelance", "Freelance"),

@@ -6,37 +6,40 @@
         <h2 class="mb-1">Financial Dashboard</h2>
         <p class="text-muted mb-0">Choose a month to see your complete financial picture.</p>
     </div>
-    <a href="{% url 'add_transaction' %}" class="btn btn-primary">Add transaction</a>
+    <div>
+        <a href="{% url 'add_income' %}" class="btn btn-success">+ Add Income</a>
+        <a href="{% url 'add_expense' %}" class="btn btn-danger">+ Add Expense</a>
+    </div>
 </div>
 
 {% for year in years %}
 <h5 class="mb-3">{{ year }}</h5>
 <div class="row g-3 mb-4">
     {% for m in months %}
-        {% if m.year == year %}
-        <div class="col-12 col-sm-6 col-lg-3">
-            <a href="{% url 'month_detail' m.year m.month %}" class="text-decoration-none text-dark">
-                <div class="card month-card h-100 p-3">
-                    <div class="d-flex justify-content-between">
-                        <h5 class="mb-3">{{ m.name }}</h5>
-                        {% if m.has_data %}
-                            <span class="badge text-bg-success">Data</span>
-                        {% else %}
-                            <span class="badge text-bg-light">Empty</span>
-                        {% endif %}
-                    </div>
-                    <div class="small-muted">Income</div>
-                    <div class="fw-semibold text-success">₹{{ m.income|floatformat:2 }}</div>
-                    <div class="small-muted mt-2">Expenses</div>
-                    <div class="fw-semibold text-danger">₹{{ m.expense|floatformat:2 }}</div>
-                    <div class="small-muted mt-2">Net savings</div>
-                    <div class="fw-semibold {% if m.savings >= 0 %}text-success{% else %}text-danger{% endif %}">
-                        ₹{{ m.savings|floatformat:2 }}
-                    </div>
+    {% if m.year == year %}
+    <div class="col-12 col-sm-6 col-lg-3">
+        <a href="{% url 'month_detail' m.year m.month %}" class="text-decoration-none text-dark">
+            <div class="card month-card h-100 p-3">
+                <div class="d-flex justify-content-between">
+                    <h5 class="mb-3">{{ m.name }}</h5>
+                    {% if m.has_data %}
+                    <span class="badge text-bg-success">Data</span>
+                    {% else %}
+                    <span class="badge text-bg-light">Empty</span>
+                    {% endif %}
                 </div>
-            </a>
-        </div>
-        {% endif %}
+                <div class="small-muted">Income</div>
+                <div class="fw-semibold text-success">₹{{ m.income|floatformat:2 }}</div>
+                <div class="small-muted mt-2">Expenses</div>
+                <div class="fw-semibold text-danger">₹{{ m.expense|floatformat:2 }}</div>
+                <div class="small-muted mt-2">Net savings</div>
+                <div class="fw-semibold {% if m.savings >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    ₹{{ m.savings|floatformat:2 }}
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endif %}
     {% endfor %}
 </div>
 {% empty %}
