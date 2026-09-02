@@ -10,10 +10,32 @@
 </div>
 
 <div class="row g-3 mb-4">
-    <div class="col-6 col-lg-3"><div class="card p-3"><div class="small-muted">Income</div><div class="stat-value text-success">₹{{ income|floatformat:2 }}</div></div></div>
-    <div class="col-6 col-lg-3"><div class="card p-3"><div class="small-muted">Expenses</div><div class="stat-value text-danger">₹{{ expense|floatformat:2 }}</div></div></div>
-    <div class="col-6 col-lg-3"><div class="card p-3"><div class="small-muted">Net savings</div><div class="stat-value {% if savings >= 0 %}positive{% else %}negative{% endif %}">₹{{ savings|floatformat:2 }}</div></div></div>
-    <div class="col-6 col-lg-3"><div class="card p-3"><div class="small-muted">Savings rate</div><div class="stat-value">{{ savings_rate|floatformat:1 }}%</div></div></div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3">
+            <div class="small-muted">Income</div>
+            <div class="stat-value text-success">₹{{ income|floatformat:2 }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3">
+            <div class="small-muted">Expenses</div>
+            <div class="stat-value text-danger">₹{{ expense|floatformat:2 }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3">
+            <div class="small-muted">Net savings</div>
+            <div class="stat-value {% if savings >= 0 %}positive{% else %}negative{% endif %}">
+                ₹{{savings|floatformat:2}}
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3">
+            <div class="small-muted">Savings rate</div>
+            <div class="stat-value">{{ savings_rate|floatformat:1 }}%</div>
+        </div>
+    </div>
 </div>
 
 <div class="row g-4">
@@ -26,22 +48,37 @@
             {% if transactions %}
             <div class="table-responsive">
                 <table class="table align-middle">
-                    <thead><tr><th>Date</th><th>Name</th><th>Category</th><th>Type</th><th class="text-end">Amount</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                    {% for t in transactions %}
-                    <tr>
-                        <td>{{ t.date|date:"d M" }}</td>
-                        <td><strong>{{ t.name }}</strong><div class="small-muted">{{ t.description|truncatechars:35 }}</div></td>
-                        <td>{{ t.get_category_display }}</td>
-                        <td><span class="badge {% if t.type == 'income' %}text-bg-success{% else %}text-bg-danger{% endif %}">{{ t.get_type_display }}</span></td>
-                        <td class="text-end fw-semibold">₹{{ t.amount|floatformat:2 }}</td>
-                    </tr>
-                    {% endfor %}
+                        {% for t in transactions %}
+                        <tr>
+                            <td>{{ t.date|date:"d M" }}</td>
+                            <td><strong>{{ t.name }}</strong>
+                                <div class="small-muted">{{ t.description|truncatechars:35 }}</div>
+                            </td>
+                            <td>{{ t.get_category_display }}</td>
+                            <td>
+                                <span
+                                    class="badge {% if t.type == 'income' %}text-bg-success{% else %}text-bg-danger{% endif %}">
+                                    {{t.get_type_display }}
+                                </span>
+                            </td>
+                            <td class="text-end fw-semibold">₹{{ t.amount|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
             {% else %}
-                <p class="text-muted mb-0">No transactions for this month.</p>
+            <p class="text-muted mb-0">No transactions for this month.</p>
             {% endif %}
         </div>
     </div>
@@ -50,30 +87,32 @@
         <div class="card p-4 mb-4">
             <h5>Expense breakdown</h5>
             {% if category_rows %}
-                {% for row in category_rows %}
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1">
-                        <span>{{ row.label }}</span>
-                        <span class="fw-semibold">₹{{ row.total|floatformat:2 }} ({{ row.percent|floatformat:1 }}%)</span>
-                    </div>
-                    <div class="category-bar"><div style="width: {{ row.percent }}%"></div></div>
+            {% for row in category_rows %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>{{ row.label }}</span>
+                    <span class="fw-semibold">₹{{ row.total|floatformat:2 }} ({{ row.percent|floatformat:1 }}%)</span>
                 </div>
-                {% endfor %}
+                <div class="category-bar">
+                    <div style="width: {{row.percent}}%"></div>
+                </div>
+            </div>
+            {% endfor %}
             {% else %}
-                <p class="text-muted">No expense data yet.</p>
+            <p class="text-muted">No expense data yet.</p>
             {% endif %}
         </div>
 
         <div class="card p-4">
             <h5>💡 Suggestions</h5>
             {% if suggestions %}
-                <ul class="mb-0">
+            <ul class="mb-0">
                 {% for suggestion in suggestions %}
-                    <li class="mb-2">{{ suggestion }}</li>
+                <li class="mb-2">{{ suggestion }}</li>
                 {% endfor %}
-                </ul>
+            </ul>
             {% else %}
-                <p class="text-muted mb-0">Your finances look balanced based on the available data.</p>
+            <p class="text-muted mb-0">Your finances look balanced based on the available data.</p>
             {% endif %}
         </div>
     </div>
