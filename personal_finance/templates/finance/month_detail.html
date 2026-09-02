@@ -26,7 +26,7 @@
         <div class="card p-3">
             <div class="small-muted">Net savings</div>
             <div class="stat-value {% if savings >= 0 %}positive{% else %}negative{% endif %}">
-                ₹{{savings|floatformat:2}}
+                ₹{{ savings|floatformat:2}}
             </div>
         </div>
     </div>
@@ -94,7 +94,7 @@
                     <span class="fw-semibold">₹{{ row.total|floatformat:2 }} ({{ row.percent|floatformat:1 }}%)</span>
                 </div>
                 <div class="category-bar">
-                    <div style="width: {{row.percent}}%"></div>
+                    <div style="--bar-width: {{ row.percent }}%; width: var(--bar-width);"></div>
                 </div>
             </div>
             {% endfor %}
