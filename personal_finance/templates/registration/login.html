@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Login | MoneyMate{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-5">
+<div class="card p-4">
+<h3 class="mb-1">Welcome back</h3><p class="text-muted">Log in to manage your finances.</p>
+<form method="post">{% csrf_token %}
+{% for field in form %}
+<div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}</div>
+{% endfor %}
+{% if form.errors %}<div class="alert alert-danger">Invalid username or password.</div>{% endif %}
+<button class="btn btn-primary w-100">Login</button>
+</form>
+<p class="text-center mt-3 mb-0">New here? <a href="{% url 'register' %}">Create an account</a></p>
+</div>
+</div>
+</div>
+{% endblock %}
