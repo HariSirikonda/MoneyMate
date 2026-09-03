@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ loan.loan_name }} | MoneyMate
+{% endblock %}
+
+{% block content %}
+
+
+<!-- HEADER -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <a href="{% url 'loans' %}" class="text-decoration-none">
+            ← My Loans
+        </a>
+
+        <h2 class="mt-2 mb-0">
+            {{ loan.loan_name }}
+        </h2>
+
+        <p class="text-muted">
+            {{ loan.get_loan_type_display }}
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- LOAN SUMMARY -->
+
+<div class="row g-3 mb-4">
+
+    <div class="col-6 col-lg-3">
+
+        <div class="card p-3">
+
+            <div class="small-muted">
+                Loan Amount
+            </div>
+
+            <div class="stat-value">
+                ₹{{ loan.principal_amount|floatformat:2 }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-6 col-lg-3">
+
+        <div class="card p-3">
+
+            <div class="small-muted">
+                EMI
+            </div>
+
+            <div class="stat-value text-danger">
+                ₹{{ loan.emi_amount|floatformat:2 }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-6 col-lg-3">
+
+        <div class="card p-3">
+
+            <div class="small-muted">
+                Outstanding
+            </div>
+
+            <div class="stat-value">
+                ₹{{ loan.outstanding_amount|floatformat:2 }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-6 col-lg-3">
+
+        <div class="card p-3">
+
+            <div class="small-muted">
+                Interest Rate
+            </div>
+
+            <div class="stat-value">
+                {{ loan.interest_rate }}%
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- PROGRESS -->
+
+<div class="card p-4 mb-4">
+
+    <div class="d-flex justify-content-between">
+
+        <h5>
+            Loan Progress
+        </h5>
+
+        <span>
+            {{ paid_installments }} /
+            {{ loan.tenure_months }}
+            EMIs
+        </span>
+
+    </div>
+
+
+    {% widthratio paid_installments loan.tenure_months 100 as progress %}
+
+    <div class="progress mt-3" style="height: 12px;">
+
+        <div class="progress-bar" style="--bar-width: {{ progress }}%; width: var(--bar-width);"></div>
+    </div>
+
+</div>
+
+
+<!-- NEXT EMI -->
+
+{% if next_payment %}
+
+<div class="card p-4 mb-4">
+
+    <div class="d-flex justify-content-between align-items-center">
+
+        <div>
+
+            <h5>
+                Next EMI
+            </h5>
+
+            <p class="mb-1">
+                Installment #{{ next_payment.installment_number }}
+            </p>
+
+            <small class="text-muted">
+                Due {{ next_payment.due_date|date:"d M Y" }}
+            </small>
+
+        </div>
+
+
+        <div class="text-end">
+
+            <h4>
+                ₹{{ next_payment.amount|floatformat:2 }}
+            </h4>
+
+            <form method="POST" action="{% url 'mark_emi_paid' next_payment.id %}">
+
+                {% csrf_token %}
+
+                <button class="btn btn-success btn-sm" type="submit">
+                    Mark as Paid
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<!-- EMI SCHEDULE -->
+
+<div class="card p-4">
+
+    <div class="d-flex justify-content-between mb-3">
+
+        <h5>
+            EMI Payment Schedule
+        </h5>
+
+        <span class="text-muted">
+            {{ remaining_installments }} remaining
+        </span>
+
+    </div>
+
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+
+                    <th>Due Date</th>
+
+                    <th>Principal</th>
+
+                    <th>Interest</th>
+
+                    <th>EMI</th>
+
+                    <th>Status</th>
+
+                    <th></th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for payment in payments %}
+
+                <tr>
+
+                    <td>
+                        {{ payment.installment_number }}
+                    </td>
+
+                    <td>
+                        {{ payment.due_date|date:"d M Y" }}
+                    </td>
+
+                    <td>
+                        ₹{{ payment.principal_component|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        ₹{{ payment.interest_component|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ₹{{ payment.amount|floatformat:2 }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+
+                        {% if payment.status == "paid" %}
+
+                        <span class="badge text-bg-success">
+                            Paid
+                        </span>
+
+                        {% elif payment.status == "overdue" %}
+
+                        <span class="badge text-bg-danger">
+                            Overdue
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge text-bg-warning">
+                            Pending
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if payment.status != "paid" %}
+
+                        <form method="POST" action="{% url 'mark_emi_paid' payment.id %}">
+
+                            {% csrf_token %}
+
+                            <button class="btn btn-sm btn-outline-success">
+                                Pay
+                            </button>
+
+                        </form>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="7" class="text-center text-muted py-4">
+                        No EMI schedule available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}
+Loans | MoneyMate
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2>My Loans</h2>
+        <p class="text-muted mb-0">
+            Track your loans and EMI payments.
+        </p>
+    </div>
+
+    <a href="{% url 'add_loan' %}" class="btn btn-primary">
+        + Add Loan
+    </a>
+
+</div>
+
+
+<!-- SUMMARY -->
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+
+        <div class="card p-3">
+
+            <div class="small-muted">
+                Active Loans
+            </div>
+
+            <div class="stat-value">
+                {{ active_loans }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card p-3">
+
+            <div class="small-muted">
+                Monthly EMI
+            </div>
+
+            <div class="stat-value text-danger">
+                ₹{{ total_emi|floatformat:2 }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card p-3">
+
+            <div class="small-muted">
+                Total Outstanding
+            </div>
+
+            <div class="stat-value">
+                ₹{{ total_outstanding|floatformat:2 }}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- LOANS -->
+
+<div class="row g-4">
+
+    {% for loan in loans %}
+
+    <div class="col-md-6 col-lg-4">
+
+        <div class="card p-4 h-100">
+
+            <div class="d-flex justify-content-between">
+
+                <h5>
+                    {{ loan.loan_name }}
+                </h5>
+
+                {% if loan.status == "active" %}
+
+                <span class="badge text-bg-success">
+                    Active
+                </span>
+
+                {% else %}
+
+                <span class="badge text-bg-secondary">
+                    Completed
+                </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <p class="text-muted">
+                {{ loan.get_loan_type_display }}
+            </p>
+
+
+            <hr>
+
+
+            <div class="d-flex justify-content-between mb-2">
+
+                <span>Original Amount</span>
+
+                <strong>
+                    ₹{{ loan.principal_amount|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div class="d-flex justify-content-between mb-2">
+
+                <span>Outstanding</span>
+
+                <strong>
+                    ₹{{ loan.outstanding_amount|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div class="d-flex justify-content-between mb-2">
+
+                <span>Monthly EMI</span>
+
+                <strong class="text-danger">
+                    ₹{{ loan.emi_amount|floatformat:2 }}
+                </strong>
+
+            </div>
+
+
+            <div class="d-flex justify-content-between mb-3">
+
+                <span>Interest</span>
+
+                <strong>
+                    {{ loan.interest_rate }}%
+                </strong>
+
+            </div>
+
+
+            <a href="{% url 'loan_detail' loan.id %}" class="btn btn-outline-primary w-100">
+                View Loan
+            </a>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="col-12">
+
+        <div class="card p-5 text-center">
+
+            <h4>No loans added</h4>
+
+            <p class="text-muted">
+                Add your first loan to start tracking EMIs.
+            </p>
+
+            <a href="{% url 'add_loan' %}" class="btn btn-primary mx-auto">
+                Add Loan
+            </a>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
