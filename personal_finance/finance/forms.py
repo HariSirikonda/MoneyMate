@@ -1,6 +1,10 @@
 from django import forms
-from .models import Transaction
+from .models import Transaction, Loan
 
+class LoanForm(forms.ModelForm):
+    class Meta:
+        model = Loan
+        fields = ["name", "type", "principal_amount", "interest_rate", "tenure_months", "emi_amount", "start_date", "end_date", "outstanding_amount", "status"]
 
 class TransactionForm(forms.ModelForm):
     class Meta:
