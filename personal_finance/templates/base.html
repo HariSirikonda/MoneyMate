@@ -70,6 +70,7 @@
             <a class="navbar-brand" href="{% url 'dashboard' %}">MoneyMate</a>
             {% if user.is_authenticated %}
             <div class="d-flex align-items-center gap-2">
+                <a class="btn btn-outline-light btn-sm" href="{% url 'loans' %}">Loans</a>
                 <a class="btn btn-outline-light btn-sm" href="{% url 'transactions' %}">Transactions</a>
                 <a class="btn btn-primary btn-sm" href="{% url 'add_transaction' %}">+ Add</a>
                 <span class="text-light small ms-2">Hi, {{ user.username }}</span>

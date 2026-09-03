@@ -4,8 +4,20 @@ from .models import Transaction, Loan
 class LoanForm(forms.ModelForm):
     class Meta:
         model = Loan
-        fields = ["name", "type", "principal_amount", "interest_rate", "tenure_months", "emi_amount", "start_date", "end_date", "outstanding_amount", "status"]
+        fields = ["loan_name", "loan_type", "principal_amount", "interest_rate", "tenure_months", "emi_amount", "start_date", "end_date", "outstanding_amount", "status"]
+    widgets = {
+        "start_date": forms.DateInput(attrs={"type": "date"}),
+        "end_date": forms.DateInput(attrs={"type": "date"}),
+    }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.Select):
+                field.widget.attrs.update({"class": "form-select form-select-sm w-100"})
+            else:
+                field.widget.attrs.update({"class": "form-control form-control-sm w-100"})
+                
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction

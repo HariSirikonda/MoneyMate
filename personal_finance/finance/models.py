@@ -16,13 +16,13 @@ class Loan(models.Model):
     ]
 
     STATUS_CHOICES = [
-        ("pending" , "Pending"),
-        ("paid" , "Paid"),
-        ("overdue" , "Overdue")
+        ("active" , "Active"),
+        ("completed" , "Ccompleted"),
+        ("closed" , "Closed")
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="transactions")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="loans")
     loan_name = models.CharField(max_length=120)
     loan_type = models.CharField(max_length=20, choices=LOAN_TYPES)
     principal_amount = models.DecimalField(max_digits=12, decimal_places=2)
@@ -45,6 +45,13 @@ class EMIPayment(models.Model):
     interest_component = models.DecimalField(max_digits=12, decimal_places=2)
     paid_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=[("pending", "Pending"), ("paid", "Paid"), ("overdue", "Overdue")], default="pending")
+
+    def __str__(self):
+        return (
+            f"{self.loan.loan_name} - Installment #{self.installment_number}"
+            f" ({self.status})"
+        )
+
 
 class Transaction(models.Model):
     INCOME = "income"

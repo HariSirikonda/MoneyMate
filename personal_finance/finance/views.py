@@ -7,9 +7,251 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
-from .forms import TransactionForm
-from .models import Transaction
+from .forms import TransactionForm, LoanForm
+from .models import EMIPayment, Loan, Transaction
 
+def generate_emi_schedule(loan):
+
+    principal = Decimal(loan.principal_amount)
+
+    annual_rate = Decimal(loan.interest_rate)
+
+    months = loan.tenure_months
+
+    monthly_rate = annual_rate / Decimal("1200")
+
+    if monthly_rate == 0:
+
+        emi = principal / Decimal(months)
+
+    else:
+
+        emi = (
+            principal
+            * monthly_rate
+            * (1 + monthly_rate) ** months
+            / (
+                (1 + monthly_rate) ** months - 1
+            )
+        )
+
+    emi = emi.quantize(Decimal("0.01"))
+
+    loan.emi_amount = emi
+    loan.save(update_fields=["emi_amount"])
+
+    outstanding = principal
+
+    from dateutil.relativedelta import relativedelta
+
+    for i in range(1, months + 1):
+
+        interest = (
+            outstanding * monthly_rate
+        ).quantize(Decimal("0.01"))
+
+        principal_component = (
+            emi - interest
+        ).quantize(Decimal("0.01"))
+
+        # Fix final installment rounding
+        if i == months:
+            principal_component = outstanding
+            emi_amount = (
+                principal_component + interest
+            ).quantize(Decimal("0.01"))
+        else:
+            emi_amount = emi
+
+        outstanding -= principal_component
+
+        due_date = (
+            loan.start_date +
+            relativedelta(months=i - 1)
+        )
+
+        EMIPayment.objects.create(
+            loan=loan,
+            installment_number=i,
+            amount=emi_amount,
+            principal_component=principal_component,
+            interest_component=interest,
+            status="pending"
+        )
+
+@login_required
+def add_loan(request):
+
+    if request.method == "POST":
+
+        form = LoanForm(request.POST)
+
+        if form.is_valid():
+
+            loan = form.save(commit=False)
+            loan.user = request.user
+
+            loan.outstanding_amount = loan.principal_amount
+            loan.status = "active"
+
+            loan.save()
+
+            # Generate EMI schedule
+            generate_emi_schedule(loan)
+
+            messages.success(
+                request,
+                "Loan and EMI schedule created successfully."
+            )
+
+            return redirect("loans")
+
+    else:
+        form = LoanForm()
+
+    return render(
+        request,
+        "finance/loan_form.html",
+        {
+            "form": form,
+            "title": "Add Loan"
+        }
+    )
+
+@login_required
+def loans(request):
+
+    loans = Loan.objects.filter(
+        user=request.user
+    ).order_by("-start_date")
+
+    total_emi = loans.filter(
+        status="active"
+    ).aggregate(
+        total=Sum("emi_amount")
+    )["total"] or Decimal("0")
+
+    total_outstanding = loans.filter(
+        status="active"
+    ).aggregate(
+        total=Sum("outstanding_amount")
+    )["total"] or Decimal("0")
+
+    active_loans = loans.filter(
+        status="active"
+    ).count()
+
+    return render(
+        request,
+        "finance/loans.html",
+        {
+            "loans": loans,
+            "total_emi": total_emi,
+            "total_outstanding": total_outstanding,
+            "active_loans": active_loans,
+        }
+    )
+
+@login_required(login_url="login")
+def loan_detail(request, pk):
+    loan = get_object_or_404(
+        Loan,
+        pk=pk,
+        user=request.user
+    )
+    payments = loan.payments.all().order_by(
+        "installment_number"
+    )
+    total_paid = (
+        payments
+        .filter(status="paid")
+        .aggregate(total=Sum("amount"))["total"]
+        or Decimal("0")
+    )
+    paid_installments = payments.filter(
+        status="paid"
+    ).count()
+    remaining_installments = payments.filter(
+        status="pending"
+    ).count()
+    next_payment = (
+        payments
+        .filter(status="pending")
+        .order_by("installment_number")
+        .first()
+    )
+    return render(
+        request,
+        "finance/loan_detail.html",
+        {
+            "loan": loan,
+            "payments": payments,
+            "total_paid": total_paid,
+            "paid_installments": paid_installments,
+            "remaining_installments": remaining_installments,
+            "next_payment": next_payment,
+        }
+    )
+
+@login_required
+def mark_emi_paid(request, pk):
+
+    payment = get_object_or_404(
+        EMIPayment,
+        pk=pk,
+        loan__user=request.user
+    )
+
+    if request.method == "POST":
+
+        if payment.status != "paid":
+
+            payment.status = "paid"
+            payment.paid_date = date.today()
+            payment.save()
+
+            loan = payment.loan
+
+            loan.outstanding_amount -= (
+                payment.principal_component
+            )
+
+            if loan.outstanding_amount < 0:
+                loan.outstanding_amount = Decimal("0")
+
+            # Check whether loan is completely paid
+            if loan.outstanding_amount == 0:
+
+                loan.status = "completed"
+
+            loan.save()
+
+            # Create transaction automatically
+            from .models import Transaction
+
+            Transaction.objects.create(
+                user=request.user,
+                name=f"{loan.loan_name} EMI #{payment.installment_number}",
+                description=(
+                    f"EMI payment for {loan.loan_name}. "
+                    f"Principal: ₹{payment.principal_component}, "
+                    f"Interest: ₹{payment.interest_component}"
+                ),
+                type=Transaction.EXPENSE,
+                category="loan",
+                amount=payment.amount,
+                date=payment.paid_date
+            )
+
+            messages.success(
+                request,
+                "EMI marked as paid and transaction recorded."
+            )
+
+    return redirect(
+        "loan_detail",
+        pk=payment.loan.id
+    )
 
 def _month_summary(user, year, month):
     qs = Transaction.objects.filter(user=user, date__year=year, date__month=month)
@@ -55,7 +297,6 @@ def _month_summary(user, year, month):
         "category_rows": category_rows,
         "suggestions": suggestions,
     }
-
 
 @login_required
 def dashboard(request):
