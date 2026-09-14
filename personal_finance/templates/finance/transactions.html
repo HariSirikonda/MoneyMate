@@ -16,6 +16,7 @@
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Time</th>
                         <th>Name</th>
                         <th>Type</th>
                         <th>Category</th>
@@ -26,7 +27,8 @@
                 <tbody>
                     {% for t in transactions %}
                     <tr>
-                        <td>{{ t.date|date:"d M Y" }} {{ t.date|date:"h:i A" }}</td>
+                        <td>{{ t.date|date:"d M Y" }}</td>
+                        <td> {{ t.date|date:"h:i:s" }}</td>
                         <td><strong>{{ t.name }}</strong>
                             <div class="small-muted">{{ t.description|truncatechars:40 }}</div>
                         </td>

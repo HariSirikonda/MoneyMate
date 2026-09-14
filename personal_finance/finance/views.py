@@ -349,7 +349,7 @@ def add_income(request):
             transaction.user = request.user
             transaction.save()
             messages.success(request, "Transaction added successfully.")
-            return redirect("transactions")
+            return redirect("dashboard")
     else:
         form = TransactionForm(fixed_type = Transaction.INCOME)
     return render(request, "finance/transaction_form.html", {"form": form, "title": "Add Income"})
