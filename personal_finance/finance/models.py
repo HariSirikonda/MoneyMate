@@ -112,7 +112,7 @@ class Transaction(models.Model):
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
-    date = models.DateField(default=timezone.localdate)
+    date = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ["-date", "-id"]

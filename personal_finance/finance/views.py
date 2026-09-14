@@ -337,7 +337,7 @@ def month_detail(request, year, month):
 
 @login_required
 def transactions(request):
-    qs = Transaction.objects.filter(user=request.user)
+    qs = Transaction.objects.filter(user=request.user).order_by("-date")
     return render(request, "finance/transactions.html", {"transactions": qs})
 
 @login_required
