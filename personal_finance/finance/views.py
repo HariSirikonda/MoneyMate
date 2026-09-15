@@ -76,7 +76,8 @@ def generate_emi_schedule(loan):
             amount=emi_amount,
             principal_component=principal_component,
             interest_component=interest,
-            status="pending"
+            status="pending",
+            due_date=due_date
         )
 
 @login_required
@@ -96,7 +97,6 @@ def add_loan(request):
 
             loan.save()
 
-            # Generate EMI schedule
             generate_emi_schedule(loan)
 
             messages.success(
@@ -320,7 +320,6 @@ def dashboard(request):
 
     return render(request, "finance/dashboard.html", {"months": months, "years": years})
 
-
 @login_required
 def month_detail(request, year, month):
     if month < 1 or month > 12:
@@ -333,7 +332,6 @@ def month_detail(request, year, month):
         "month": month,
         "month_name": month_name[month],
     })
-
 
 @login_required
 def transactions(request):
