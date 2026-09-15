@@ -4,7 +4,7 @@ from .models import Transaction, Loan
 class LoanForm(forms.ModelForm):
     class Meta:
         model = Loan
-        fields = ["loan_name", "loan_type", "principal_amount", "interest_rate", "tenure_months", "emi_amount", "start_date", "end_date", "outstanding_amount", "status"]
+        fields = ["loan_name", "loan_type", "principal_amount", "interest_rate", "tenure_months", "start_date", "end_date", "outstanding_amount", "status"]
     widgets = {
         "start_date": forms.DateInput(attrs={"type": "date"}),
         "end_date": forms.DateInput(attrs={"type": "date"}),

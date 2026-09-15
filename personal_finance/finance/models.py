@@ -28,7 +28,7 @@ class Loan(models.Model):
     principal_amount = models.DecimalField(max_digits=12, decimal_places=2)
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, help_text="Anual Interest Rate (%)")
     tenure_months = models.PositiveIntegerField()
-    emi_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    emi_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     start_date = models.DateField(default=timezone.localdate)
     end_date = models.DateField(default=timezone.localdate)
     outstanding_amount = models.DecimalField(max_digits=12, decimal_places=2)
