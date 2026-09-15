@@ -10,6 +10,7 @@ urlpatterns = [
     path("transactions/addExpense/", views.add_expense, name="add_expense"),
     path("transactions/<uuid:pk>/edit/", views.edit_transaction, name="edit_transaction"),
     path("transactions/<uuid:pk>/delete/", views.delete_transaction, name="delete_transaction"),
+    path("loans/<uuid:pk>/delete/", views.delete_loan, name="delete_loan"),
     path("month/<int:year>/<int:month>/", views.month_detail, name="month_detail"),
     path("loans/", views.loans, name="loans"),
     path("loans/add/",views.add_loan,name="add_loan"),

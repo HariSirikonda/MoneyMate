@@ -406,6 +406,14 @@ def delete_transaction(request, pk):
         return redirect("transactions")
     return render(request, "finance/delete_confirm.html", {"transaction": transaction})
 
+@login_required
+def delete_loan(request, pk):
+    loan = get_object_or_404(Loan, pk=pk, user=request.user)
+    if request.method == "POST":
+        loan.delete()
+        messages.success(request, "Loan Object deleted successfully")
+        return redirect("loans")
+    return render(request, "finance/loan_delete.html", {"loan" : loan})
 
 def register(request):
     if request.user.is_authenticated:
