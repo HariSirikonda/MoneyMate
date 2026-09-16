@@ -31,6 +31,7 @@ class Loan(models.Model):
     emi_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     start_date = models.DateField(default=timezone.localdate)
     end_date = models.DateField(default=timezone.localdate)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     outstanding_amount = models.DecimalField(max_digits=12, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 

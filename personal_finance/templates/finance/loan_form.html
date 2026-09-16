@@ -58,4 +58,61 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 1. DOM Element Selectors (Dynamically mapping to Django's auto-generated IDs)
+        const principalInput = document.getElementById("id_principal_amount");
+        const outstandingInput = document.getElementById("id_outstanding_amount");
+        const startDateInput = document.getElementById("id_start_date");
+        const tenureInput = document.getElementById("id_tenure_months");
+        const endDateInput = document.getElementById("id_end_date");
+
+        // ==========================================
+        // TASK 1: Sync Principal with Outstanding
+        // ==========================================
+        if (principalInput && outstandingInput) {
+            principalInput.addEventListener("input", function () {
+                // Automatically updates outstanding balance as the user types a numeric principal
+                outstandingInput.value = principalInput.value;
+            });
+        }
+
+        // ==========================================
+        // TASK 2: Automatic End Date Calculation
+        // ==========================================
+        function calculateEndDate() {
+            if (!startDateInput || !tenureInput || !endDateInput) return;
+
+            const startDateValue = startDateInput.value;
+            const tenureValue = parseInt(tenureInput.value, 10);
+
+            // Run calculation only if both values are validly filled out
+            if (startDateValue && !isNaN(tenureValue) && tenureValue > 0) {
+                // Split date components manually to prevent local timezone shifting errors
+                const [year, month, day] = startDateValue.split('-').map(Number);
+
+                // Construct base date (Note: JavaScript months are 0-indexed, so subtract 1)
+                const date = new Date(year, month - 1, day);
+
+                // Add tenure months to the start date profile
+                date.setMonth(date.getMonth() + tenureValue);
+
+                // Extract calculations back into standard YYYY-MM-DD format strings
+                const calculatedYear = date.getFullYear();
+                const calculatedMonth = String(date.getMonth() + 1).padStart(2, '0');
+                const calculatedDay = String(date.getDate()).padStart(2, '0');
+
+                endDateInput.value = `${calculatedYear}-${calculatedMonth}-${calculatedDay}`;
+            } else {
+                // Clear end date field clear if criteria isn't met
+                endDateInput.value = "";
+            }
+        }
+
+        // Bind event listeners to both driving fields so order of entry doesn't matter
+        if (startDateInput) startDateInput.addEventListener("change", calculateEndDate);
+        if (tenureInput) tenureInput.addEventListener("input", calculateEndDate);
+    });
+</script>
+
 {% endblock %}

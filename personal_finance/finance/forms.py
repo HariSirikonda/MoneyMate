@@ -1,14 +1,22 @@
 from django import forms
 from .models import Transaction, Loan
 
+from django import forms
+from .models import Loan
+
 class LoanForm(forms.ModelForm):
     class Meta:
         model = Loan
-        fields = ["loan_name", "loan_type", "principal_amount", "interest_rate", "tenure_months", "start_date", "end_date", "outstanding_amount", "status"]
-    widgets = {
-        "start_date": forms.DateInput(attrs={"type": "date"}),
-        "end_date": forms.DateInput(attrs={"type": "date"}),
-    }
+        fields = [
+            "loan_name", "loan_type", "principal_amount", 
+            "interest_rate", "tenure_months", "start_date", 
+            "end_date", "outstanding_amount", "status"
+        ]
+        # Fixed: Shifted inside Class Meta
+        widgets = {
+            "start_date": forms.DateInput(attrs={"type": "date"}),
+            "end_date": forms.DateInput(attrs={"type": "date"}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,7 +25,7 @@ class LoanForm(forms.ModelForm):
                 field.widget.attrs.update({"class": "form-select form-select-sm w-100"})
             else:
                 field.widget.attrs.update({"class": "form-control form-control-sm w-100"})
-                
+
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction

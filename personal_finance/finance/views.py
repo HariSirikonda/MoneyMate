@@ -123,7 +123,7 @@ def loans(request):
 
     loans = Loan.objects.filter(
         user=request.user
-    ).order_by("-start_date")
+    ).order_by("-created_at")
 
     total_emi = loans.filter(
         status="active"

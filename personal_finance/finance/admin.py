@@ -17,15 +17,16 @@ class LoanAdmin(admin.ModelAdmin):
       "emi_amount",
       "status",
       "start_date",
+      "created_at",
     )
 
     list_filter = ("status", "loan_type", "start_date")
     search_fields = ("loan_name", "user__username")
-    readonly_fields = ("id",)
+    readonly_fields = ("id","created_at")
     fieldsets = (
         (
           "Basic Information",
-          {"fields": ("id", "user", "loan_name", "loan_type", "status")},
+          {"fields": ("id", "user", "loan_name", "loan_type", "status", "created_at")},
         ),
         (
           "Financial Details",
