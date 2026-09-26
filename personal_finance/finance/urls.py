@@ -13,6 +13,7 @@ urlpatterns = [
     path("loans/<uuid:pk>/delete/", views.delete_loan, name="delete_loan"),
     path("month/<int:year>/<int:month>/", views.month_detail, name="month_detail"),
     path("loans/", views.loans, name="loans"),
+    path("investments/", views.investments, name="investments"),
     path("loans/add/",views.add_loan,name="add_loan"),
     path("loans/<uuid:pk>/",views.loan_detail,name="loan_detail"),
     path("emi/<int:pk>/pay/",views.mark_emi_paid,name="mark_emi_paid"),

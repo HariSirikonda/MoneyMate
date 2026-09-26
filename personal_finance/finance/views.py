@@ -425,3 +425,7 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, "registration/register.html", {"form": form})
+
+@login_required
+def investments(request):
+    return render(request, 'finance/investments.html')
